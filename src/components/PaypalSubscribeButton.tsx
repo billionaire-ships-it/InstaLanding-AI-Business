@@ -1,74 +1,79 @@
-"use client";
+'use client'
 
-import { useEffect } from "react";
+import { useEffect } from 'react'
 
-type Tier = "starter" | "pro" | "empire";
+type Tier = 'starter' | 'pro' | 'empire'
 
 interface PayPalSubscribeButtonProps {
-  tier: Tier;
+  tier: Tier
 }
 
-declare global {
-  interface Window {
-    paypal: any;
+interface PayPalButtonsActions {
+  subscription: {
+    create: (options: { plan_id: string }) => Promise<string>
   }
+}
+
+interface PayPalButtonsData {
+  subscriptionID: string
 }
 
 const tierMap: Record<Tier, { planId: string; containerId: string; label: string }> = {
   starter: {
     planId: process.env.NEXT_PUBLIC_PAYPAL_SUBSCRIPTION_ID_STARTER_TIER!,
-    containerId: "paypal-button-container-starter",
-    label: "Starter Plan",
+    containerId: 'paypal-button-container-starter',
+    label: 'Starter Plan',
   },
   pro: {
     planId: process.env.NEXT_PUBLIC_PAYPAL_SUBSCRIPTION_ID_PRO_TIER!,
-    containerId: "paypal-button-container-pro",
-    label: "Pro Plan",
+    containerId: 'paypal-button-container-pro',
+    label: 'Pro Plan',
   },
   empire: {
     planId: process.env.NEXT_PUBLIC_PAYPAL_SUBSCRIPTION_ID_EMPIRE_TIER!,
-    containerId: "paypal-button-container-empire",
-    label: "Empire Plan",
+    containerId: 'paypal-button-container-empire',
+    label: 'Empire Plan',
   },
-};
+}
 
 export default function PayPalSubscribeButton({ tier }: PayPalSubscribeButtonProps) {
   useEffect(() => {
-    const script = document.createElement("script");
-    script.src =
-      "https://www.paypal.com/sdk/js?client-id=YOUR_PAYPAL_CLIENT_ID&vault=true&intent=subscription";
-    script.async = true;
-    script.onload = () => renderButton();
-    document.body.appendChild(script);
+    const script = document.createElement('script')
+    script.src = 'https://www.paypal.com/sdk/js?client-id=YOUR_PAYPAL_CLIENT_ID&vault=true&intent=subscription'
+    script.async = true
+    script.onload = () => renderButton()
+    document.body.appendChild(script)
 
-    function renderButton() {
-      const tierData = tierMap[tier];
+    const renderButton = () => {
+      const tierData = tierMap[tier]
       if (!tierData || !window.paypal) {
-        console.error("PayPal not ready or invalid tier");
-        return;
+        console.error('❌ PayPal not ready or invalid tier')
+        return
       }
 
       window.paypal.Buttons({
         style: {
-          shape: "rect",
-          color: "gold",
-          layout: "vertical",
-          label: "subscribe",
+          shape: 'rect',
+          color: 'gold',
+          layout: 'vertical',
+          label: 'subscribe',
         },
-        createSubscription(data: Record<string, unknown>, actions: any) {
+        createSubscription(data: PayPalButtonsData, actions: PayPalButtonsActions) {
           return actions.subscription.create({
             plan_id: tierData.planId,
-          });
+          })
         },
-        onApprove(data: { subscriptionID: string }) {
-          alert(`${tierData.label} Subscribed! Subscription ID: ${data.subscriptionID}`);
+        onApprove(data: PayPalButtonsData) {
+          alert(`${tierData.label} Subscribed! Subscription ID: ${data.subscriptionID}`)
+          // TODO: POST subscription ID to your API route for verification
         },
         onError(err: unknown) {
-          console.error("PayPal error:", err);
+          console.error(`❌ PayPal error:`, err)
+          alert('Something went wrong. Please try again.')
         },
-      }).render(`#${tierData.containerId}`);
+      }).render(`#${tierData.containerId}`)
     }
-  }, [tier]);
+  }, [tier])
 
-  return <div id={tierMap[tier].containerId}></div>;
+  return <div id={tierMap[tier].containerId}></div>
 }
