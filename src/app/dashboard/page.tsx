@@ -2,15 +2,10 @@ import { getServerSession } from "next-auth";
 import authOptions from "@/lib/auth";
 import { redirect } from "next/navigation";
 import { getUserPlanStatus } from "@/lib/plan";
-import dynamic from "next/dynamic";
 import PageWrapper from "@/components/layout/PageWrapper";
 import LogoutButton from "@/components/LogoutButton";
 import Button from "@/components/ui/Button";
-
-const DownloadCertificateButton = dynamic(
-  () => import("@/components/DownloadCertificateButton"),
-  { ssr: false }
-);
+import DashboardCertificateBlock from "@/components/dashboard/DashboardCertificateBlock"; // ✅ NEW IMPORT
 
 export default async function DashboardPage() {
   const session = await getServerSession(authOptions);
@@ -61,14 +56,13 @@ export default async function DashboardPage() {
         )}
 
         {(isActive || isTrial) && (
-          <div className="mt-6">
-            <DownloadCertificateButton
-              landingPageName={landingPageName}
-              launchDate={launchDate}
-            />
-          </div>
+          <DashboardCertificateBlock
+            landingPageName={landingPageName}
+            launchDate={launchDate}
+          />
         )}
       </div>
     </PageWrapper>
   );
 }
+
