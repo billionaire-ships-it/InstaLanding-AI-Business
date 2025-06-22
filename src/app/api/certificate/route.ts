@@ -1,10 +1,10 @@
+// src/app/api/certificate/route.ts
 import { NextRequest, NextResponse } from "next/server";
 import PDFDocument from "pdfkit";
 import { getServerSession } from "next-auth";
-import  authOptions  from "@/lib/auth";
+import authOptions from "@/lib/auth";
 
-export async function GET(req: NextRequest) {
-  // Get session to identify user
+export async function GET(req: NextRequest): Promise<Response> {
   const session = await getServerSession(authOptions);
   if (!session || !session.user) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -15,21 +15,18 @@ export async function GET(req: NextRequest) {
   const launchDate = url.searchParams.get("date") || new Date().toLocaleDateString();
   const landingPageName = url.searchParams.get("pageName") || "Your Landing Page";
 
-  // Create a new PDF document
-  const doc = new PDFDocument({
-    size: "A4",
-    margin: 50,
-  });
+  // Create PDF document
+  const doc = new PDFDocument({ size: "A4", margin: 50 });
 
-  // Prepare stream to buffer PDF
+  // Collect PDF chunks
   const chunks: Uint8Array[] = [];
   doc.on("data", (chunk) => chunks.push(chunk));
-  
-  return new Promise((resolve) => {
+
+  return await new Promise<Response>((resolve) => {
     doc.on("end", () => {
       const pdfBuffer = Buffer.concat(chunks);
       resolve(
-        new NextResponse(pdfBuffer, {
+        new Response(pdfBuffer, {
           status: 200,
           headers: {
             "Content-Type": "application/pdf",
@@ -39,7 +36,7 @@ export async function GET(req: NextRequest) {
       );
     });
 
-    // PDF Content
+    // PDF content
     doc
       .fontSize(26)
       .fillColor("#4F46E5")
@@ -75,12 +72,11 @@ export async function GET(req: NextRequest) {
       .text(`Launch Date: ${launchDate}`, { align: "center" })
       .moveDown(2);
 
-    // InstaLanding AI branding footer
     doc
       .fontSize(12)
       .fillColor("#6B7280")
-      .text("Powered by InstaLanding AI", { align: "center" })
-      .moveDown(0.5);
+      .text("Powered by InstaLanding AI", { align: "center" });
 
     doc.end();
-  })}
+  });
+}
