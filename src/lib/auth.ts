@@ -3,13 +3,12 @@ import GoogleProvider from "next-auth/providers/google";
 import GitHubProvider from "next-auth/providers/github";
 import EmailProvider from "next-auth/providers/email";
 import { PrismaAdapter } from "@auth/prisma-adapter";
-import  prisma  from "@/lib/db";
+import prisma from "@/lib/db";
 import { Resend } from "resend";
-import type { Adapter } from "next-auth/adapters"; // Add this to fix the adapter type error
+import type { Adapter } from "next-auth/adapters";
 
-const resend = new Resend;
+const resend = new Resend();
 
-// Role definitions
 export const roles = {
   FREE: "free",
   PRO: "pro",
@@ -18,7 +17,6 @@ export const roles = {
 
 type Role = (typeof roles)[keyof typeof roles];
 
-// Custom send verification email for magic links
 const sendVerificationRequest = async ({
   identifier: email,
   url,
@@ -46,9 +44,8 @@ const sendVerificationRequest = async ({
   }
 };
 
-// NextAuth config
 const authOptions: NextAuthOptions = {
-  adapter: PrismaAdapter(prisma) as Adapter, // Cast to correct type to fix conflict
+  adapter: PrismaAdapter(prisma) as Adapter,
   providers: [
     GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID!,
@@ -59,7 +56,7 @@ const authOptions: NextAuthOptions = {
       clientSecret: process.env.GITHUB_SECRET!,
     }),
     EmailProvider({
-      maxAge: 15 * 60, // 15 minutes
+      maxAge: 15 * 60,
       sendVerificationRequest,
     }),
   ],
@@ -72,7 +69,7 @@ const authOptions: NextAuthOptions = {
         token.id = user.id;
         token.email = user.email;
         token.name = user.name;
-        token.role = (user as any).role || roles.FREE;
+        token.role = (user as { role?: string }).role || roles.FREE;
       }
       return token;
     },
@@ -81,7 +78,7 @@ const authOptions: NextAuthOptions = {
         session.user.id = token.id as string;
         session.user.email = token.email as string;
         session.user.name = token.name as string;
-        (session.user as any).role = token.role as Role;
+        (session.user as { role?: string }).role = token.role as Role;
       }
       return session;
     },
@@ -95,5 +92,4 @@ const authOptions: NextAuthOptions = {
 
 export default authOptions;
 
-// For server components and API routes
 export const getAuthSession = () => getServerSession(authOptions);

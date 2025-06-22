@@ -2,6 +2,6 @@ export {};
 
 declare global {
   interface Window {
-    paypal: any; // Or use PayPal namespace if typed
+    paypal: typeof import("@paypal/paypal-js")["paypal"];
   }
 }
