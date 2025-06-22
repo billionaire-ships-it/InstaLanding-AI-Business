@@ -1,3 +1,7 @@
+import "./globals.css";
+import { ReactNode } from "react";
+
+
 export const metadata = {
   title: 'InstaLanding AI',
   description: 'AI-Powered Business Empire Builder',
