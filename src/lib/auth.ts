@@ -7,7 +7,7 @@ import prisma from "@/lib/db";
 import { Resend } from "resend";
 import type { Adapter } from "next-auth/adapters";
 
-const resend = new Resend();
+const resend = new Resend(process.env.RESEND_API_KEY!);
 
 export const roles = {
   FREE: "free",
