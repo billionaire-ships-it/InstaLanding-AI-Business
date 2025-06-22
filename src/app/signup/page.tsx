@@ -1,20 +1,18 @@
-'use client'
+"use client";
 
-import { signIn } from "next-auth/react"
-import { useRouter } from "next/navigation"
-import { useState } from "react"
+import { signIn } from "next-auth/react";
+import { useState } from "react";
 
 export default function SignUpPage() {
-  const [email, setEmail] = useState("")
-  const router = useRouter()
+  const [email, setEmail] = useState("");
 
   const handleEmailSignUp = async (e: React.FormEvent) => {
-    e.preventDefault()
+    e.preventDefault();
     await signIn("email", {
       email,
       callbackUrl: "/dashboard",
-    })
-  }
+    });
+  };
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center px-4">
@@ -25,7 +23,7 @@ export default function SignUpPage() {
           type="email"
           placeholder="Enter your email"
           value={email}
-          onChange={e => setEmail(e.target.value)}
+          onChange={(e) => setEmail(e.target.value)}
           required
           className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring"
         />
@@ -46,5 +44,6 @@ export default function SignUpPage() {
         Sign up with Google
       </button>
     </div>
-  )
+  );
 }
+

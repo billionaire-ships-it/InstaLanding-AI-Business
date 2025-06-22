@@ -23,7 +23,7 @@ const sendVerificationRequest = async ({
 }: {
   identifier: string;
   url: string;
-}) => {
+}): Promise<void> => {
   const result = await resend.emails.send({
     from: "no-reply@instalanding.ai",
     to: email,
@@ -69,7 +69,7 @@ const authOptions: NextAuthOptions = {
         token.id = user.id;
         token.email = user.email;
         token.name = user.name;
-        token.role = (user as { role?: string }).role || roles.FREE;
+        token.role = (user as { role?: Role }).role || roles.FREE;
       }
       return token;
     },
@@ -78,7 +78,7 @@ const authOptions: NextAuthOptions = {
         session.user.id = token.id as string;
         session.user.email = token.email as string;
         session.user.name = token.name as string;
-        (session.user as { role?: string }).role = token.role as Role;
+        session.user.role = token.role as Role;
       }
       return session;
     },
@@ -91,5 +91,4 @@ const authOptions: NextAuthOptions = {
 };
 
 export default authOptions;
-
 export const getAuthSession = () => getServerSession(authOptions);

@@ -4,9 +4,8 @@ import { useState } from "react";
 import { motion } from "framer-motion";
 import Button from "@/components/ui/Button";
 import Input from "@/components/ui/Input";
-import Textarea from "@/components/ui/Textarea";
 
-export default function MarketingAIPage() {
+export default function DashboardPage() {
   const [assetType, setAssetType] = useState("ad-copy");
   const [prompt, setPrompt] = useState("");
   const [loading, setLoading] = useState(false);
@@ -15,7 +14,6 @@ export default function MarketingAIPage() {
   async function generateAsset() {
     setLoading(true);
     setResult("");
-    // simulate API call
     await new Promise((r) => setTimeout(r, 1500));
     setResult(`Generated ${assetType} for: "${prompt}"`);
     setLoading(false);
@@ -29,9 +27,7 @@ export default function MarketingAIPage() {
         transition={{ duration: 0.5 }}
         className="max-w-4xl mx-auto bg-white rounded-2xl shadow-lg p-6 sm:p-10 space-y-8"
       >
-        <h1 className="text-2xl font-semibold text-gray-900">
-          Marketing AI Generator
-        </h1>
+        <h1 className="text-2xl font-semibold text-gray-900">Marketing AI Generator</h1>
 
         <form
           onSubmit={(e) => {
@@ -41,10 +37,7 @@ export default function MarketingAIPage() {
           className="space-y-6"
         >
           <div>
-            <label
-              htmlFor="assetType"
-              className="block text-sm font-semibold text-gray-700 mb-2"
-            >
+            <label htmlFor="assetType" className="block text-sm font-semibold text-gray-700 mb-2">
               Select asset type
             </label>
             <select
@@ -60,10 +53,7 @@ export default function MarketingAIPage() {
           </div>
 
           <div>
-            <label
-              htmlFor="prompt"
-              className="block text-sm font-semibold text-gray-700 mb-2"
-            >
+            <label htmlFor="prompt" className="block text-sm font-semibold text-gray-700 mb-2">
               Brief description
             </label>
             <Input

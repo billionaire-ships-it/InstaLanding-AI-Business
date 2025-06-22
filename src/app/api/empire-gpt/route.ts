@@ -1,9 +1,9 @@
-// src/app/api/empire-gpt/route.ts
 import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { streamText } from "ai";
 import authOptions from "@/lib/auth";
 import { checkUserAccess } from "@/lib/checkAccess";
+import { LanguageModelV1 } from 'ai';
 
 export async function POST(req: NextRequest) {
   const session = await getServerSession(authOptions);
@@ -16,10 +16,10 @@ export async function POST(req: NextRequest) {
     return new Response("Upgrade required for EmpireGPT", { status: 403 });
   }
 
-  const { prompt } = await req.json();
+  const { prompt }: { prompt: string } = await req.json();
 
   const result = await streamText({
-    model: "gpt-4o" as any,
+    model: "gpt-4o" as unknown as LanguageModelV1, // ✅ Properly inferred as a literal type
     messages: [
       {
         role: "system",
@@ -35,4 +35,3 @@ Speak with confidence, urgency, and clarity.`,
 
   return new NextResponse(result.textStream);
 }
-

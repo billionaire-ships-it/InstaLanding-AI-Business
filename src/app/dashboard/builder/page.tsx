@@ -3,7 +3,6 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import Button from "@/components/ui/Button";
-import Input from "@/components/ui/Input"; 
 import Textarea from "@/components/ui/Textarea";
 
 export default function BuilderPage() {
@@ -12,7 +11,6 @@ export default function BuilderPage() {
 
   async function generateLandingPage() {
     setLoading(true);
-    // Call AI generation API here...
     await new Promise((r) => setTimeout(r, 2000));
     setLoading(false);
   }
@@ -37,10 +35,7 @@ export default function BuilderPage() {
           className="space-y-6"
         >
           <div>
-            <label
-              htmlFor="prompt"
-              className="block text-sm font-semibold text-gray-700 mb-2"
-            >
+            <label htmlFor="prompt" className="block text-sm font-semibold text-gray-700 mb-2">
               Describe your landing page idea
             </label>
             <Textarea
@@ -59,7 +54,6 @@ export default function BuilderPage() {
           </Button>
         </form>
 
-        {/* Results preview section (placeholder) */}
         <div className="bg-gray-100 rounded-2xl shadow-md p-6 min-h-[200px]">
           <p className="text-gray-600 italic">
             Generated landing page will appear here...

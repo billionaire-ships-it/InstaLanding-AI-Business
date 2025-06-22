@@ -1,26 +1,32 @@
-import { streamText } from "ai";
+import { streamText, LanguageModelV1 } from "ai";
 import { NextResponse } from "next/server";
 
+interface RequestBody {
+  assetType: string;
+  prompt: string;
+}
+
 export async function POST(req: Request) {
-  const { assetType, prompt } = await req.json();
+  const { assetType, prompt }: RequestBody = await req.json();
 
   let systemPrompt = "";
+
   switch (assetType) {
     case "Ad Copy":
-      systemPrompt = `You are a world-class direct response copywriter. Write a high-converting Facebook/Instagram ad copy for this product or service: "${prompt}". Make it persuasive, punchy, and ideal for social media.`;
+      systemPrompt = `You are a world-class direct response copywriter. Write a high-converting Facebook/Instagram ad copy for this product: "${prompt}".`;
       break;
     case "Email Subject":
-      systemPrompt = `You're a legendary email marketer. Write 3 powerful email subject lines for the following campaign: "${prompt}". Make them short, intriguing, and conversion-driven.`;
+      systemPrompt = `You're a legendary email marketer. Write 3 powerful subject lines for this campaign: "${prompt}".`;
       break;
     case "Product Description":
-      systemPrompt = `You’re a top-tier eCommerce copywriter. Write a persuasive product description for: "${prompt}". Highlight benefits, create desire, and use emotional language.`;
+      systemPrompt = `You’re an eCommerce expert. Write a persuasive product description for: "${prompt}".`;
       break;
     default:
       systemPrompt = `Generate marketing copy for: "${prompt}".`;
   }
 
   const result = await streamText({
-    model: "gpt-4o" as any, // 👈 FORCE-CAST to bypass type error
+    model: "gpt-4o" as unknown as LanguageModelV1,
     messages: [
       {
         role: "system",
@@ -35,4 +41,5 @@ export async function POST(req: Request) {
     },
   });
 }
+
 
