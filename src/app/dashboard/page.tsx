@@ -1,83 +1,74 @@
-"use client";
-
-import { useState } from "react";
-import { motion } from "framer-motion";
+import { getServerSession } from "next-auth";
+import authOptions from "@/lib/auth";
+import { redirect } from "next/navigation";
+import { getUserPlanStatus } from "@/lib/plan";
+import dynamic from "next/dynamic";
+import PageWrapper from "@/components/layout/PageWrapper";
+import LogoutButton from "@/components/LogoutButton";
 import Button from "@/components/ui/Button";
-import Input from "@/components/ui/Input";
 
-export default function DashboardPage() {
-  const [assetType, setAssetType] = useState("ad-copy");
-  const [prompt, setPrompt] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [result, setResult] = useState("");
+const DownloadCertificateButton = dynamic(
+  () => import("@/components/DownloadCertificateButton"),
+  { ssr: false }
+);
 
-  async function generateAsset() {
-    setLoading(true);
-    setResult("");
-    await new Promise((r) => setTimeout(r, 1500));
-    setResult(`Generated ${assetType} for: "${prompt}"`);
-    setLoading(false);
-  }
+export default async function DashboardPage() {
+  const session = await getServerSession(authOptions);
+  if (!session?.user) redirect("/login");
+
+  const { plan, isActive, isTrial, isExpired } = await getUserPlanStatus(
+    session.user.email!
+  );
+
+  const accessMessage = isActive
+    ? `✅ Active plan: ${plan}`
+    : isTrial
+    ? "🧪 Trial mode: Upgrade to unlock all features."
+    : isExpired
+    ? "❌ Trial expired: Please subscribe to continue."
+    : "🚫 No active plan: Upgrade required.";
+
+  const landingPageName = "My Awesome Landing Page";
+  const launchDate = new Date().toLocaleDateString();
 
   return (
-    <main className="min-h-screen bg-gray-50 px-4 sm:px-6 py-10">
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
-        className="max-w-4xl mx-auto bg-white rounded-2xl shadow-lg p-6 sm:p-10 space-y-8"
-      >
-        <h1 className="text-2xl font-semibold text-gray-900">Marketing AI Generator</h1>
+    <PageWrapper>
+      <div className="flex justify-between items-center">
+        <h1 className="text-2xl font-bold text-gray-800">Welcome to Your Dashboard</h1>
+        <LogoutButton />
+      </div>
 
-        <form
-          onSubmit={(e) => {
-            e.preventDefault();
-            generateAsset();
-          }}
-          className="space-y-6"
+      <div className="bg-yellow-100 text-yellow-800 px-4 py-3 rounded-lg text-sm">
+        {accessMessage}
+      </div>
+
+      <div className="space-y-4">
+        <p className="text-gray-600">Your empire tools will appear here based on your plan.</p>
+
+        <a
+          href="/guides/6-figure-launch.pdf"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-block bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 text-sm transition"
         >
-          <div>
-            <label htmlFor="assetType" className="block text-sm font-semibold text-gray-700 mb-2">
-              Select asset type
-            </label>
-            <select
-              id="assetType"
-              value={assetType}
-              onChange={(e) => setAssetType(e.target.value)}
-              className="w-full border-gray-300 rounded-md p-2 text-sm"
-            >
-              <option value="ad-copy">Ad Copy</option>
-              <option value="email-subject">Email Subject Line</option>
-              <option value="product-description">Product Description</option>
-            </select>
-          </div>
+          📘 Download the “6-Figure Launch Guide”
+        </a>
 
-          <div>
-            <label htmlFor="prompt" className="block text-sm font-semibold text-gray-700 mb-2">
-              Brief description
-            </label>
-            <Input
-              id="prompt"
-              type="text"
-              value={prompt}
-              onChange={(e) => setPrompt(e.target.value)}
-              placeholder="What is this asset about?"
-              required
-              className="w-full"
+        {!isActive && (
+          <Button variant="premium" className="mt-2">
+            Upgrade Now
+          </Button>
+        )}
+
+        {(isActive || isTrial) && (
+          <div className="mt-6">
+            <DownloadCertificateButton
+              landingPageName={landingPageName}
+              launchDate={launchDate}
             />
           </div>
-
-          <Button type="submit" variant="primary" size="lg" loading={loading}>
-            {loading ? "Generating..." : "Generate"}
-          </Button>
-        </form>
-
-        {result && (
-          <div className="bg-gray-100 rounded-2xl shadow-md p-6 mt-6 whitespace-pre-wrap">
-            {result}
-          </div>
         )}
-      </motion.div>
-    </main>
+      </div>
+    </PageWrapper>
   );
 }

@@ -1,91 +1,54 @@
-'use client'
+"use client";
 
-import { useState } from 'react'
-import Input from '@/components/ui/Input'
-import Button from '@/components/ui/Button'
-import Label from '@/components/ui/Label'
-import { Card, CardContent } from '@/components/ui/Card'
-import { Loader2 } from 'lucide-react'
-
-
+import { useState } from "react";
+import PageWrapper from "@/components/layout/PageWrapper";
+import Input from "@/components/ui/Input";
+import Textarea from "@/components/ui/Textarea";
+import Button from "@/components/ui/Button";
 
 export default function MarketingAIPage() {
-  const [assetType, setAssetType] = useState('Ad Copy')
-  const [prompt, setPrompt] = useState('')
-  const [output, setOutput] = useState('')
-  const [loading, setLoading] = useState(false)
+  const [type, setType] = useState("ad");
+  const [prompt, setPrompt] = useState("");
+  const [output, setOutput] = useState("");
 
-  const handleGenerate = async () => {
-    setOutput('')
-    setLoading(true)
-    const res = await fetch('/api/generate-marketing', {
-      method: 'POST',
-      body: JSON.stringify({ assetType, prompt }),
-    })
-
-    if (!res.body) {
-      setLoading(false)
-      return
-    }
-
-    const reader = res.body.getReader()
-    const decoder = new TextDecoder()
-
-    while (true) {
-      const { value, done } = await reader.read()
-      if (done) break
-      const chunk = decoder.decode(value)
-      setOutput(prev => prev + chunk)
-    }
-
-    setLoading(false)
-  }
+  const generate = async () => {
+    const res = await fetch("/api/generate-marketing", {
+      method: "POST",
+      body: JSON.stringify({ type, prompt }),
+    });
+    const data = await res.text();
+    setOutput(data);
+  };
 
   return (
-    <div className="max-w-3xl mx-auto p-6 space-y-6">
-      <h1 className="text-3xl font-bold text-center">🎯 Marketing AI Generator</h1>
+    <PageWrapper>
+      <h1 className="text-2xl font-bold text-gray-800">Marketing AI Generator</h1>
+      <p className="text-gray-600 mb-4">Generate ads, email subject lines, and product descriptions.</p>
 
-      <Card>
-        <CardContent className="space-y-4 pt-6">
-          <div>
-            <Label htmlFor="assetType">Asset Type</Label>
-            <select
-              id="assetType"
-              value={assetType}
-              onChange={e => setAssetType(e.target.value)}
-              className="w-full p-2 mt-1 border rounded-md"
-            >
-              <option>Ad Copy</option>
-              <option>Email Subject</option>
-              <option>Product Description</option>
-            </select>
-          </div>
+      <select
+        value={type}
+        onChange={(e) => setType(e.target.value)}
+        className="mb-3 border border-gray-300 rounded px-3 py-2"
+      >
+        <option value="ad">Ad Copy</option>
+        <option value="email">Email Subject</option>
+        <option value="description">Product Description</option>
+      </select>
 
-          <div>
-            <Label htmlFor="prompt">What is it about?</Label>
-            <Input
-              id="prompt"
-              value={prompt}
-              onChange={e => setPrompt(e.target.value)}
-              placeholder="E.g. AI landing page builder for entrepreneurs"
-            />
-          </div>
+      <Textarea
+        value={prompt}
+        onChange={(e) => setPrompt(e.target.value)}
+        placeholder="Describe your product or offer..."
+        rows={4}
+      />
 
-          <Button
-            onClick={handleGenerate}
-            disabled={loading || !prompt}
-            className="w-full"
-          >
-            {loading ? <Loader2 className="animate-spin" /> : 'Generate'}
-          </Button>
-        </CardContent>
-      </Card>
+      <Button onClick={generate}>Generate</Button>
 
       {output && (
-        <div className="p-4 border rounded-md bg-gray-100 whitespace-pre-wrap">
+        <div className="mt-6 bg-gray-100 rounded p-4 text-sm text-gray-800 whitespace-pre-wrap">
           {output}
         </div>
       )}
-    </div>
-  )
+    </PageWrapper>
+  );
 }
