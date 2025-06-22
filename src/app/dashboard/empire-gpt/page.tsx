@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import PageWrapper from "@/components/layout/PageWrapper";
-import Input from "@/components/ui/Input";
 import Button from "@/components/ui/Button";
 import Textarea from "@/components/ui/Textarea";
 
