@@ -2,7 +2,6 @@ import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { streamText } from "ai";
 import authOptions from "@/lib/auth";
-import { checkAccess } from "@/lib/checkAccess";
 import { LanguageModelV1 } from 'ai';
 import { hasPlanAccess } from "@/lib/planAccess";
 
