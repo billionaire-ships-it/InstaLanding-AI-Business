@@ -2,8 +2,9 @@ import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { streamText } from "ai";
 import authOptions from "@/lib/auth";
-import { checkUserAccess } from "@/lib/checkAccess";
+import { checkAccess } from "@/lib/checkAccess";
 import { LanguageModelV1 } from 'ai';
+import { hasPlanAccess } from "@/lib/planAccess";
 
 export async function POST(req: NextRequest) {
   const session = await getServerSession(authOptions);
@@ -11,7 +12,7 @@ export async function POST(req: NextRequest) {
     return new Response("Unauthorized", { status: 401 });
   }
 
-  const hasAccess = await checkUserAccess(session.user.email, "pro");
+  const hasAccess = await hasPlanAccess(session.user.email, "pro");
   if (!hasAccess) {
     return new Response("Upgrade required for EmpireGPT", { status: 403 });
   }

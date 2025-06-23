@@ -1,4 +1,3 @@
-// src/lib/checkAccess.ts
 import { getServerSession } from "next-auth";
 import authOptions from "@/lib/auth";
 import { getUserPlanStatus } from "@/lib/plan";
@@ -13,9 +12,7 @@ export async function checkAccess() {
 
   const { isActive, isTrial } = await getUserPlanStatus(session.user.email);
 
-  const hasAccess = isActive || isTrial;
-
-  if (!hasAccess) {
+  if (!isActive && !isTrial) {
     redirect("/subscribe");
   }
 

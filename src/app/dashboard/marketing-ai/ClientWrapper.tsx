@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { checkAccess } from "@/lib/checkAccess";
 import PageWrapper from "@/components/layout/PageWrapper";
 import Textarea from "@/components/ui/Textarea";
 import Button from "@/components/ui/Button";
