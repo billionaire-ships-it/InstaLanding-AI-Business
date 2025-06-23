@@ -1,10 +1,8 @@
 import { checkAccess } from "@/lib/checkAccess";
-import dynamic from "next/dynamic";
-
-// Dynamically load the client component after access check
-const MarketingClient = dynamic(() => import("./ClientWrapper"), { ssr: false });
+import ClientWrapper from "./ClientWrapper"; // ✅ Direct import, no dynamic()
 
 export default async function MarketingAIPage() {
-  await checkAccess();
-  return <MarketingClient />;
+  await checkAccess(); // ✅ Only runs on the server
+  return <ClientWrapper />; // ✅ Render client-side UI normally
 }
+
