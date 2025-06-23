@@ -1,23 +1,14 @@
 import "./globals.css";
 
-
 export const metadata = {
-  title: 'InstaLanding AI',
-  description: 'AI-Powered Business Empire Builder',
-  icons: {
-    icon: '/favicon.png',
-  },
+  title: "InstaLanding AI",
+  description: "AI-Powered Business Empire Builder",
 };
 
-
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode
-}) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
-      <body>{children}</body>
+      <body className="bg-gray-50 text-gray-900">{children}</body>
     </html>
-  )
+  );
 }

@@ -10,6 +10,8 @@ import {
 } from "recharts";
 import PageWrapper from "@/components/layout/PageWrapper";
 
+
+
 const sampleData = [
   { name: "Mon", pages: 2 },
   { name: "Tue", pages: 5 },

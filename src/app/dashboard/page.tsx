@@ -6,6 +6,7 @@ import PageWrapper from "@/components/layout/PageWrapper";
 import LogoutButton from "@/components/LogoutButton";
 import Button from "@/components/ui/Button";
 import DashboardCertificateBlock from "@/components/dashboard/DashboardCertificateBlock"; // ✅ NEW IMPORT
+import Link from "next/link";
 
 export default async function DashboardPage() {
   const session = await getServerSession(authOptions);
@@ -61,6 +62,11 @@ export default async function DashboardPage() {
             launchDate={launchDate}
           />
         )}
+        (
+  <div className="bg-yellow-50 text-yellow-800 text-sm p-3 rounded border border-yellow-300">
+    ⚠️ You’re currently on your free trial. <Link href="/subscribe" className="underline font-medium">Upgrade now</Link> before it ends!
+  </div>
+)
       </div>
     </PageWrapper>
   );
