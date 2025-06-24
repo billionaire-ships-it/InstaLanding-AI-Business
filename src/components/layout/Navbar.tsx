@@ -47,8 +47,8 @@ export default function Navbar() {
           <Link href="/subscribe" onClick={toggleMenu}>Pricing</Link>
           {!session?.user ? (
             <>
-              <Link href="/login" onClick={toggleMenu}>Login</Link>
-              <Link href="/signup" onClick={toggleMenu}>Sign Up</Link>
+             <Link href="/login" className="hover:text-blue-600">Login</Link>
+             <Link href="/signup" className="hover:text-blue-600">Sign Up</Link>
             </>
           ) : (
             <button onClick={() => { signOut(); toggleMenu(); }} className="text-left text-red-600">Logout</button>
