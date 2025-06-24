@@ -6,8 +6,9 @@ export default function NotFoundPage() {
     <div className="min-h-screen flex items-center justify-center text-center">
       <div>
         <h1 className="text-3xl font-bold text-red-600">404 – Not Found</h1>
-        <p className="mt-2 text-gray-600">The page you are looking for doesn’t exist.</p>
+        <p className="mt-2 text-gray-600">This page doesn’t exist, Commander.</p>
       </div>
     </div>
   );
 }
+

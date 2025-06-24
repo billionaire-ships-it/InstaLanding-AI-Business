@@ -1,6 +1,8 @@
+// /src/components/layout/ClientNavbar.tsx
 "use client";
+import dynamic from "next/dynamic";
 
-import Navbar from "./Navbar";
+const Navbar = dynamic(() => import("./Navbar"), { ssr: false });
 
 export default function ClientNavbar() {
   return <Navbar />;
