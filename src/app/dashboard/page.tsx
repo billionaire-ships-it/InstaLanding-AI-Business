@@ -37,7 +37,7 @@ export default async function DashboardPage() {
       {/* Access Banners */}
       {!isActive && isTrial && (
         <div className="bg-yellow-50 border border-yellow-300 text-yellow-800 text-sm p-3 rounded mb-6">
-          ⚠️ You're on a free trial. <Link href="/subscribe" className="underline font-medium">Upgrade now</Link> to unlock all features.
+          ⚠️ You are on a free trial. <Link href="/subscribe" className="underline font-medium">Upgrade now</Link> to unlock all features.
         </div>
       )}
 

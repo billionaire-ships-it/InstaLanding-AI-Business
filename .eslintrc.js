@@ -34,6 +34,7 @@ module.exports = {
     // ⚠️ Strong linting
     "@typescript-eslint/no-explicit-any": "error",
     "@typescript-eslint/explicit-module-boundary-types": "off",
+    "react/no-unescaped-entities": "off",
     "@typescript-eslint/no-unused-vars": ["warn", { argsIgnorePattern: "^_" }],
     "react/react-in-jsx-scope": "off",
     "import/order": [
