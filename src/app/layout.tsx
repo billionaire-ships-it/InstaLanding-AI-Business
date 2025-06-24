@@ -1,5 +1,5 @@
 import "./globals.css";
-import Navbar from "@/components/layout/Navbar";
+import ClientNavbar from "@/components/layout/ClientNavbar";
 import GlobalToaster from "@/components/ui/Toaster";
 import type { Metadata } from "next";
 
@@ -30,7 +30,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en">
       <body className="bg-white text-gray-900">
-        <Navbar />
+        <ClientNavbar />
         <GlobalToaster />
         {children}
       </body>
