@@ -1,65 +1,58 @@
 "use client";
 
-import { useState } from "react";
-import { motion } from "framer-motion";
-import Button from "@/components/ui/Button";
+import { useEffect, useState } from "react";
+import PageWrapper from "@/components/layout/PageWrapper";
 import Textarea from "@/components/ui/Textarea";
+import Button from "@/components/ui/Button";
 
-export default function BuilderPage() {
+export default function BuilderClient() {
   const [prompt, setPrompt] = useState("");
+  const [output, setOutput] = useState("");
+  const [locked, setLocked] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  async function generateLandingPage() {
+  useEffect(() => {
+    fetch("/api/access-check")
+      .then((res) => res.json())
+      .then((data) => {
+        setLocked(data.status === "locked");
+      });
+  }, []);
+
+  const generate = async () => {
+    if (locked) return;
     setLoading(true);
+    setOutput("");
     await new Promise((r) => setTimeout(r, 2000));
+    setOutput(`🚀 AI Copy for: "${prompt}"\n\n[Headline] Your idea just got real.`);
     setLoading(false);
-  }
+  };
 
   return (
-    <main className="min-h-screen bg-gray-50 px-4 sm:px-6 py-10">
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
-        className="max-w-4xl mx-auto bg-white rounded-2xl shadow-lg p-6 sm:p-10 space-y-8"
-      >
-        <h1 className="text-2xl font-semibold text-gray-900">
-          AI Landing Page Builder
-        </h1>
+    <PageWrapper>
+      <div className="space-y-4">
+        <h1 className="text-2xl font-bold text-gray-800">AI Page Builder</h1>
 
-        <form
-          onSubmit={(e) => {
-            e.preventDefault();
-            generateLandingPage();
-          }}
-          className="space-y-6"
-        >
-          <div>
-            <label htmlFor="prompt" className="block text-sm font-semibold text-gray-700 mb-2">
-              Describe your landing page idea
-            </label>
-            <Textarea
-              id="prompt"
-              rows={5}
-              className="w-full border-gray-300 rounded-md p-3 text-sm resize-none"
-              value={prompt}
-              onChange={(e) => setPrompt(e.target.value)}
-              placeholder="E.g., A SaaS landing page for productivity app..."
-              required
-            />
+        {locked && (
+          <div className="bg-yellow-100 text-yellow-800 p-4 rounded">
+            ⚠️ Trial expired. <a href="/subscribe" className="underline font-semibold">Upgrade to continue</a>.
           </div>
+        )}
 
-          <Button type="submit" variant="primary" size="lg" loading={loading}>
-            {loading ? "Generating..." : "Generate Landing Page"}
-          </Button>
-        </form>
-
-        <div className="bg-gray-100 rounded-2xl shadow-md p-6 min-h-[200px]">
-          <p className="text-gray-600 italic">
-            Generated landing page will appear here...
-          </p>
+        <Textarea
+          value={prompt}
+          onChange={(e) => setPrompt(e.target.value)}
+          placeholder="e.g. A finance app for freelancers"
+          rows={4}
+          disabled={locked}
+        />
+        <Button onClick={generate} disabled={locked || loading}>
+          {loading ? "Generating..." : "Generate"}
+        </Button>
+        <div className="bg-gray-100 p-4 rounded text-sm whitespace-pre-wrap min-h-[100px]">
+          {output || "Generated copy will appear here..."}
         </div>
-      </motion.div>
-    </main>
+      </div>
+    </PageWrapper>
   );
 }

@@ -1,74 +1,98 @@
 import { getServerSession } from "next-auth";
-import authOptions from "@/lib/auth";
 import { redirect } from "next/navigation";
+import authOptions from "@/lib/auth";
 import { getUserPlanStatus } from "@/lib/plan";
 import PageWrapper from "@/components/layout/PageWrapper";
 import LogoutButton from "@/components/LogoutButton";
-import Button from "@/components/ui/Button";
-import DashboardCertificateBlock from "@/components/dashboard/DashboardCertificateBlock"; // ✅ NEW IMPORT
 import Link from "next/link";
+import Button from "@/components/ui/Button";
+import DashboardClientWrapper from "./ClientWrapper"; // 👈 import the client toast
 
 export default async function DashboardPage() {
   const session = await getServerSession(authOptions);
-  if (!session?.user) redirect("/login");
+  if (!session?.user?.email) redirect("/login");
 
-  const { plan, isActive, isTrial, isExpired } = await getUserPlanStatus(
-    session.user.email!
-  );
+  const { plan, isActive, isTrial, isExpired } = await getUserPlanStatus(session.user.email);
 
   const accessMessage = isActive
-    ? `✅ Active plan: ${plan}`
+    ? `✅ Active Plan: ${plan.toUpperCase()}`
     : isTrial
-    ? "🧪 Trial mode: Upgrade to unlock all features."
+    ? "🧪 Trial Mode: Upgrade to unlock premium features."
     : isExpired
-    ? "❌ Trial expired: Please subscribe to continue."
-    : "🚫 No active plan: Upgrade required.";
-
-  const landingPageName = "My Awesome Landing Page";
-  const launchDate = new Date().toLocaleDateString();
+    ? "❌ Trial Expired: Subscribe to continue."
+    : "🚫 No Active Plan";
 
   return (
     <PageWrapper>
-      <div className="flex justify-between items-center">
-        <h1 className="text-2xl font-bold text-gray-800">Welcome to Your Dashboard</h1>
+      <DashboardClientWrapper isTrial={isTrial} isExpired={isExpired} />
+
+      <div className="flex justify-between items-center mb-6">
+        <div>
+          <h1 className="text-2xl font-bold text-gray-900">Welcome, {session.user.name ?? "Entrepreneur"}</h1>
+          <p className="text-sm text-gray-500">{accessMessage}</p>
+        </div>
         <LogoutButton />
       </div>
 
-      <div className="bg-yellow-100 text-yellow-800 px-4 py-3 rounded-lg text-sm">
-        {accessMessage}
+      {/* Access Banners */}
+      {!isActive && isTrial && (
+        <div className="bg-yellow-50 border border-yellow-300 text-yellow-800 text-sm p-3 rounded mb-6">
+          ⚠️ You're on a free trial. <Link href="/subscribe" className="underline font-medium">Upgrade now</Link> to unlock all features.
+        </div>
+      )}
+
+      {!isActive && isExpired && (
+        <div className="bg-red-50 border border-red-300 text-red-800 text-sm p-3 rounded mb-6">
+          🚫 Your trial has ended. <Link href="/subscribe" className="underline font-medium">Subscribe</Link> to continue building your empire.
+        </div>
+      )}
+
+      {/* Feature Cards */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+        <FeatureCard
+          title="🧠 EmpireGPT AI"
+          description="Ask business growth questions and get strategic answers."
+          href="/dashboard/empire-gpt"
+        />
+        <FeatureCard
+          title="⚡ AI Page Builder"
+          description="Describe your idea and generate high-converting landing pages."
+          href="/dashboard/builder"
+        />
+        <FeatureCard
+          title="🎯 Marketing AI"
+          description="Get ad copy, email subject lines, and product descriptions."
+          href="/dashboard/marketing-ai"
+        />
+        <FeatureCard
+          title="📊 Analytics"
+          description="View real-time performance data and page statistics."
+          href="/dashboard/analytics"
+        />
       </div>
 
-      <div className="space-y-4">
-        <p className="text-gray-600">Your empire tools will appear here based on your plan.</p>
-
-        <a
-          href="/guides/6-figure-launch.pdf"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="inline-block bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 text-sm transition"
-        >
-          📘 Download the “6-Figure Launch Guide”
-        </a>
-
-        {!isActive && (
-          <Button variant="premium" className="mt-2">
-            Upgrade Now
-          </Button>
-        )}
-
-        {(isActive || isTrial) && (
-          <DashboardCertificateBlock
-            landingPageName={landingPageName}
-            launchDate={launchDate}
-          />
-        )}
-        (
-  <div className="bg-yellow-50 text-yellow-800 text-sm p-3 rounded border border-yellow-300">
-    ⚠️ You’re currently on your free trial. <Link href="/subscribe" className="underline font-medium">Upgrade now</Link> before it ends!
-  </div>
-)
-      </div>
+      {!isActive && (
+        <div className="mt-8">
+          <Link href="/subscribe">
+            <Button variant="premium">Upgrade Now</Button>
+          </Link>
+        </div>
+      )}
     </PageWrapper>
   );
 }
+
+function FeatureCard({ title, description, href }: { title: string; description: string; href: string }) {
+  return (
+    <Link
+      href={href}
+      className="block border border-gray-200 rounded-xl p-5 hover:bg-gray-50 shadow-sm transition"
+    >
+      <h2 className="text-lg font-semibold text-gray-800 mb-2">{title}</h2>
+      <p className="text-sm text-gray-600">{description}</p>
+    </Link>
+  );
+}
+
+
 

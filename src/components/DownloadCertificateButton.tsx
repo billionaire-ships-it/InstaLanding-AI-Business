@@ -1,58 +1,58 @@
 "use client";
 
-import React, { useState } from "react";
-
-interface DownloadCertificateButtonProps {
-  landingPageName: string;
-  launchDate: string;
-}
+import { useState } from "react";
+import { PDFDocument, rgb, StandardFonts } from "pdf-lib";
+import { saveAs } from "file-saver";
 
 export default function DownloadCertificateButton({
   landingPageName,
   launchDate,
-}: DownloadCertificateButtonProps) {
+}: {
+  landingPageName: string;
+  launchDate: string;
+}) {
   const [loading, setLoading] = useState(false);
 
   const handleDownload = async () => {
     setLoading(true);
-    try {
-      const params = new URLSearchParams({
-        pageName: landingPageName,
-        date: launchDate,
-      });
 
-      const res = await fetch(`/api/certificate?${params.toString()}`, {
-        method: "GET",
-      });
+    const pdfDoc = await PDFDocument.create();
+    const page = pdfDoc.addPage([600, 400]);
+    const font = await pdfDoc.embedFont(StandardFonts.Helvetica);
 
-      if (!res.ok) throw new Error("Failed to generate certificate");
+    const heading = "🎓 InstaLanding AI Certificate of Launch";
+    const body = `This certifies that you successfully launched "${landingPageName}" on ${launchDate}. You’ve officially entered the Empire Builder's Hall.`;
 
-      const blob = await res.blob();
-      const url = window.URL.createObjectURL(blob);
+    page.drawText(heading, {
+      x: 50,
+      y: 330,
+      size: 18,
+      font,
+      color: rgb(0.2, 0.2, 0.6),
+    });
 
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = `certificate-${landingPageName
-        .replace(/\s+/g, "-")
-        .toLowerCase()}.pdf`;
-      document.body.appendChild(a);
-      a.click();
-      a.remove();
-      window.URL.revokeObjectURL(url);
-    } catch (error) {
-      alert((error as Error).message || "Error downloading certificate");
-    } finally {
-      setLoading(false);
-    }
+    page.drawText(body, {
+      x: 50,
+      y: 280,
+      size: 12,
+      font,
+      color: rgb(0.1, 0.1, 0.1),
+      maxWidth: 500,
+      lineHeight: 16,
+    });
+
+    const bytes = await pdfDoc.save();
+    saveAs(new Blob([bytes], { type: "application/pdf" }), "InstaLanding-Certificate.pdf");
+    setLoading(false);
   };
 
   return (
     <button
       onClick={handleDownload}
       disabled={loading}
-      className="w-full sm:w-auto px-4 py-2 text-sm bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl transition disabled:opacity-50"
+      className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md text-sm font-medium transition"
     >
-      {loading ? "Generating..." : "Download Launch Certificate"}
+      {loading ? "Generating..." : "📄 Download Launch Certificate"}
     </button>
   );
 }
